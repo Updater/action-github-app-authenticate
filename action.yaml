@@ -1,0 +1,24 @@
+---
+name: 'GitHub App Authenticate'
+description: |
+  A GitHub Actions custom JavaScript action that authenticates a GitHub App and generates an installation token to use in authenticated GitHub API requests.
+inputs:
+  app-id:
+    description: 'The ID of the GitHub App (not the installation ID)'
+    required: true
+  installation-id:
+    description: |
+      Installation ID for the specified GitHub App.
+      If not provided, this action will attempt to look up
+      the installation ID using the repository
+      where this action is used.
+    required: false
+  private-key:
+    description: 'PEM encoded RSA private key for the GitHub App'
+    required: true
+outputs:
+  token:
+    description: 'GitHub App Installation Token'
+runs:
+  using: 'node16'
+  main: 'dist/index.js'

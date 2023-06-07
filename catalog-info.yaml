@@ -1,0 +1,13 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: action-github-app-authenticate
+  description: |
+    A GitHub Actions custom JavaScript action that authenticates a GitHub App and generates an installation token to use in authenticated GitHub API requests.
+  annotations:
+    github.com/project-slug: Updater/action-github-app-authenticate
+spec:
+  type: library
+  owner: group:devops
+  lifecycle: production

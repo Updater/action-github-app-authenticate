@@ -1,0 +1,30 @@
+{
+  "name": "action-github-app-authenticate",
+  "version": "1.0.0",
+  "description": "Authenticate a GitHub App and generate an installation token",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "ncc build src/index.ts --license licenses.txt --out dist",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Updater/action-github-app-authenticate.git"
+  },
+  "author": "Colin Rymer <colin@colinrymer.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Updater/action-github-app-authenticate/issues"
+  },
+  "homepage": "https://github.com/Updater/action-github-app-authenticate#readme",
+  "dependencies": {
+    "@actions/core": "^1.10.0",
+    "@actions/github": "^5.1.1",
+    "@octokit/auth-app": "^4.0.13"
+  },
+  "devDependencies": {
+    "@octokit/core": "^4.2.1",
+    "@vercel/ncc": "^0.36.1",
+    "typescript": "^5.1.3"
+  }
+}
