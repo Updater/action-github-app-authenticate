@@ -64,8 +64,11 @@ async function run() {
     info(`Generating installation token for installation ID ${installationId}`)
     const installationToken = await createInstallationToken(octokit, installationId)
 
+    setOutput('installation-id', installationId)
+
     setSecret(TOKEN_OUTPUT_NAME)
     setOutput(TOKEN_OUTPUT_NAME, installationToken)
+
     info('Installation token generated.')
   } catch (err: unknown) {
     setFailed(`Action failed with error ${err}`)

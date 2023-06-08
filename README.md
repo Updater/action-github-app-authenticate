@@ -19,6 +19,9 @@ If not provided, this action will attempt to look up the installation ID using t
 
 ## Outputs
 
+### `installation-id`
+The GitHub App Installation ID used to generate token.
+
 ### `token`
 
 The GitHub App installation token that may be used for authenticated requests to the GitHub API.

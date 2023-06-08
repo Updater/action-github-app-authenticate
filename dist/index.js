@@ -35630,6 +35630,7 @@ async function run() {
         }
         (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(`Generating installation token for installation ID ${installationId}`);
         const installationToken = await createInstallationToken(octokit, installationId);
+        (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.setOutput)('installation-id', installationId);
         (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.setSecret)(TOKEN_OUTPUT_NAME);
         (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.setOutput)(TOKEN_OUTPUT_NAME, installationToken);
         (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)('Installation token generated.');

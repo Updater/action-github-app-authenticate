@@ -17,6 +17,8 @@ inputs:
     description: 'PEM encoded RSA private key for the GitHub App'
     required: true
 outputs:
+  installation-id:
+    description: 'Installation ID used to generate token'
   token:
     description: 'GitHub App Installation Token'
 runs:
