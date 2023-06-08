@@ -13,12 +13,23 @@ inputs:
       the installation ID using the repository
       where this action is used.
     required: false
+  list-installs:
+    default: false
+    required: false
+  org:
+    description: |
+      The organization to authenticate for.
+      If not provided, this action will use the owner of the repo that
+      used this action.
+    required: false
   private-key:
     description: 'PEM encoded RSA private key for the GitHub App'
     required: true
 outputs:
   installation-id:
     description: 'Installation ID used to generate token'
+  installed-orgs:
+    description: 'List of orgs the app is installed on'
   token:
     description: 'GitHub App Installation Token'
 runs:

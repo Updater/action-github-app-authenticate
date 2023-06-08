@@ -35593,9 +35593,9 @@ __nccwpck_require__.r(__webpack_exports__);
 
 
 const TOKEN_OUTPUT_NAME = 'token';
-async function getRepositoryInstallationId(octokit, repoContext) {
+async function getOrgInstallationId(octokit, org) {
     try {
-        const { data: { id: installationId } } = await octokit.rest.apps.getRepoInstallation(repoContext);
+        const { data: { id: installationId } } = await octokit.rest.apps.getOrgInstallation({ org });
         return installationId;
     }
     catch (err) {
@@ -35611,29 +35611,48 @@ async function createInstallationToken(octokit, installation_id) {
         throw new Error("Unable to create installation access token!", { cause: err });
     }
 }
+async function listInstalls(octokit) {
+    try {
+        const { data: installations } = await octokit.rest.apps.listInstallations();
+        const installedOrgs = installations.map(installation => installation?.account?.login);
+        (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.setOutput)('installed-orgs', `["${installedOrgs.join('","')}"]`);
+    }
+    catch (err) {
+        throw new Error('Failed to get installed orgs! Is the GitHub App installed anywhere?', { cause: err });
+    }
+}
+async function generateToken(octokit) {
+    const org = (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('org') || _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.repo.owner;
+    const installationIdInput = (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('installation-id');
+    let installationId = installationIdInput === '' ? undefined : Number(installationIdInput);
+    if (installationId === undefined) {
+        (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)('No installation ID provided, attempting to fetch for repository...');
+        installationId = await getOrgInstallationId(octokit, org);
+        (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(`Fetched installation ID ${installationId} for repository ${_actions_github__WEBPACK_IMPORTED_MODULE_1__.context.repo.owner}/${_actions_github__WEBPACK_IMPORTED_MODULE_1__.context.repo.repo}`);
+    }
+    (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(`Generating installation token for installation ID ${installationId}`);
+    const installationToken = await createInstallationToken(octokit, installationId);
+    (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.setOutput)('installation-id', installationId);
+    (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.setSecret)(TOKEN_OUTPUT_NAME);
+    (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.setOutput)(TOKEN_OUTPUT_NAME, installationToken);
+    (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)('Installation token generated.');
+}
 async function run() {
     try {
         const appId = (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('app-id', { required: true });
         const privateKey = (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('private-key', { required: true });
-        const installationIdInput = (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('installation-id');
-        let installationId = installationIdInput === '' ? undefined : Number(installationIdInput);
         const auth = (0,_octokit_auth_app__WEBPACK_IMPORTED_MODULE_2__.createAppAuth)({
             appId,
             privateKey,
         });
         const appAuthentication = await auth({ type: "app" });
         const octokit = (0,_actions_github__WEBPACK_IMPORTED_MODULE_1__.getOctokit)(appAuthentication.token);
-        if (installationId === undefined) {
-            (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)('No installation ID provided, attempting to fetch for repository...');
-            installationId = await getRepositoryInstallationId(octokit, _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.repo);
-            (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(`Fetched installation ID ${installationId} for repository ${_actions_github__WEBPACK_IMPORTED_MODULE_1__.context.repo.owner}/${_actions_github__WEBPACK_IMPORTED_MODULE_1__.context.repo.repo}`);
+        if ((0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getBooleanInput)('list-installs')) {
+            listInstalls(octokit);
         }
-        (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(`Generating installation token for installation ID ${installationId}`);
-        const installationToken = await createInstallationToken(octokit, installationId);
-        (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.setOutput)('installation-id', installationId);
-        (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.setSecret)(TOKEN_OUTPUT_NAME);
-        (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.setOutput)(TOKEN_OUTPUT_NAME, installationToken);
-        (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)('Installation token generated.');
+        else {
+            generateToken(octokit);
+        }
     }
     catch (err) {
         (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.setFailed)(`Action failed with error ${err}`);
